@@ -6,11 +6,19 @@ const routes = require('./routes');
 
 const app = express();
 
-const allowedOrigins = process.env.CORS_ORIGIN
+const configuredOrigins = process.env.CORS_ORIGIN
   ? process.env.CORS_ORIGIN.split(',').map((origin) => origin.trim()).filter(Boolean)
-  : true;
+  : [];
 
-app.use(cors({ origin: allowedOrigins }));
+app.use(cors({
+  origin(origin, callback) {
+    const isVercelOrigin = origin && /^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(origin);
+    if (!origin || configuredOrigins.includes(origin) || isVercelOrigin) {
+      return callback(null, true);
+    }
+    return callback(new Error('Origin tidak diizinkan oleh CORS.'));
+  },
+}));
 app.use(express.json());
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 
