@@ -6,19 +6,9 @@ const routes = require('./routes');
 
 const app = express();
 
-const configuredOrigins = process.env.CORS_ORIGIN
-  ? process.env.CORS_ORIGIN.split(',').map((origin) => origin.trim()).filter(Boolean)
-  : [];
-
-app.use(cors({
-  origin(origin, callback) {
-    const isVercelOrigin = origin && /^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(origin);
-    if (!origin || configuredOrigins.includes(origin) || isVercelOrigin) {
-      return callback(null, true);
-    }
-    return callback(new Error('Origin tidak diizinkan oleh CORS.'));
-  },
-}));
+// The API is public and authenticates requests with JWT. Allow browser clients
+// from Vercel previews and custom domains to reach the API.
+app.use(cors({ origin: true }));
 app.use(express.json());
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 

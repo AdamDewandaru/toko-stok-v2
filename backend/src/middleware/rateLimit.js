@@ -1,4 +1,4 @@
-const rateLimit = require('express-rate-limit');
+const { ipKeyGenerator, rateLimit } = require('express-rate-limit');
 
 /**
  * Limits repeated login/password attempts to slow down brute-force guessing.
@@ -11,7 +11,7 @@ const loginLimiter = rateLimit({
   max: 10,
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) => `${req.ip}:${(req.body?.username || '').toLowerCase()}`,
+  keyGenerator: (req) => `${ipKeyGenerator(req.ip)}:${(req.body?.username || '').toLowerCase()}`,
   message: { message: 'Terlalu banyak percobaan. Silakan coba lagi dalam beberapa menit.' },
 });
 
@@ -20,7 +20,7 @@ const forgotPasswordLimiter = rateLimit({
   max: 10,
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) => `${req.ip}:${(req.body?.username || '').toLowerCase()}`,
+  keyGenerator: (req) => `${ipKeyGenerator(req.ip)}:${(req.body?.username || '').toLowerCase()}`,
   message: { message: 'Terlalu banyak percobaan. Silakan coba lagi dalam beberapa menit.' },
 });
 
