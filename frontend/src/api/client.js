@@ -1,4 +1,12 @@
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
+function getApiBaseUrl() {
+  const configuredUrl = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
+  const url = configuredUrl.trim();
+  const absoluteUrl = /^https?:\/\//i.test(url) ? url : `https://${url}`;
+  const normalizedUrl = absoluteUrl.replace(/\/+$/, '');
+  return normalizedUrl.endsWith('/api') ? normalizedUrl : `${normalizedUrl}/api`;
+}
+
+const BASE_URL = getApiBaseUrl();
 
 let authToken = localStorage.getItem('toko_stok_token') || null;
 
